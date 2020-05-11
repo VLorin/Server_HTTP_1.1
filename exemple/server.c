@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 				tok=tok->next; 
 			}
 			writeDirectClient(requete->clientId,"Coucou ! C'est le serveur de Vincent qui parle",strlen("Coucou ! C'est le serveur de Vincent qui parle"));
-			writeDirectClient(requete->clientId,index.html,strlen(index.html));
+			
 		purgeTree(root); 
 		} else {
 			writeDirectClient(requete->clientId,ERROR,strlen(ERROR)); 
