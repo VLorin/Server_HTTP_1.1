@@ -123,7 +123,7 @@ int unicite_header(_Token* root, int Id){
 	while (r) {	
 		int l;
 		char *s = getElementValue(r->node,&l);
-		char *str = malloc(l*sizeof(char));
+		char *str =(char *) malloc(l); //sizeof(char) = 1
 		int i=0 ;
 		while(i<l && s[i] != ':'){
 			if(s[i] == '-') { str[i] = '_'; } 
