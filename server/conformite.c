@@ -83,12 +83,14 @@ return toReturn;
 
 int compare_chaine(char *s1, int l1, char *s2, int l2){
 	int i = 0;
+	int toReturn;
 	while(i<l1 && i<l2){
-		if(s1[i] != s2[i]) return -1;
+		if(s1[i] != s2[i]) toReturn = -1;
 		else i++;
 	}
-	if(i == l1 && i == l2) return 0;
-	else return -1;
+	if(i == l1 && i == l2) toReturn = 0;
+	else toReturn = -1;
+	return toReturn;
 }
 
 
