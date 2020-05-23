@@ -19,7 +19,7 @@
 #include "reqtarget.h"
 #include "finconnexion.h"
 #include "conformite.h"
-
+#include "vincent.h"
 
 
 int main(int argc, char *argv[]) {
@@ -44,7 +44,8 @@ int main(int argc, char *argv[]) {
 				if(req != (void *)-1){ //request-target valide, sinon message d'erreur envoyé et connexion fermée
 
 					//traitement de la réponse : Vincent
-					
+					printf("req = %s\n",req);
+					sendRequest(requete->clientId,"www.toto.com",req);
 					if(fin_connexion(root) == -1){
 						requestShutdownSocket(requete->clientId);
 					}

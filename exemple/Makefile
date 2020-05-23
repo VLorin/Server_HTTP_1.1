@@ -7,4 +7,4 @@ vincent.o: vincent.c
 # -g : pour valgrind
 
 val:
-	valgrind --tool=memcheck --leak-check=full --leak-resolution=low --show-reachable=yes --track-origins=yes ./server 
+	valgrind -v --tool=memcheck --leak-check=full --leak-resolution=low --show-reachable=yes --track-origins=yes ./server 

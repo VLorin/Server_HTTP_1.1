@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 		printf("Client [%d] [%s:%d]\n",requete->clientId,inet_ntoa(requete->clientAddress->sin_addr),htons(requete->clientAddress->sin_port));
 		printf("Contenu de la demande %.*s\n\n",requete->len,requete->buf);  
 		if (res=parseur(requete->buf,requete->len)) {
-			_Token *r,*tok,*root; 
+			_Token *r,*tok,*root, *test; 
 			if(sendHTML(requete->clientId,"./index.html") == -1){
 				printf("ERROR 404\n");
 				writeDirectClient(requete->clientId,ERROR_404,strlen(ERROR_404));
@@ -44,21 +44,16 @@ int main(int argc, char *argv[])
 			
 			root=getRootTree(); 
 			r=searchTree(root,"GET"); 
-			tok=r; 
-			/*Lnode *node;
-			node=(Lnode *)tok->node; 
-			printf("%s\n",node->value);*/
-			/*
-			while (tok) {
-				int l; 
-				char *s; 
-				// node is no longer opaque 
-				Lnode *node;
-				node=(Lnode *)tok->node; 
-				writeDirectClient(requete->clientId,node->value,node->len);
-				tok=tok->next; 
-			}
-			*/
+			char host[] = "www.toto.com";
+			char pathf[] = "index.html";
+			sendContentType(requete->clientId, pathf);
+			sendRequest(requete->clientId, host, pathf);
+			//test = searchTree(root,"HOST");
+			//tok=r; 
+			//Lnode *node;
+			//node=(Lnode *)tok->node; 
+			//printf("host = %s\n",node->value);
+			
 			
 		purgeTree(root); 
 		} else {
