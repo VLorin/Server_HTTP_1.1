@@ -47,12 +47,13 @@ int sendFile(int clientId, char *filename){ // renvoie 1 si pas d'erreur, -1 sin
         toReturn = -1; // Erreur 404 ...
     } else {
         sendContentLength(clientId, filename);
+        writeDirectClient(clientId,"\r\n",strlen("\r\n"));
         toReturn = 1;
-        readSize = fread(buffer,TAILLE,1,file);
+        readSize = fread(buffer,1,TAILLE,file);
         do{ //envoie, tant qu'il reste des données
             //printf("%ld\n",readSize);
-            writeDirectClient(clientId,buffer,strlen(buffer)); //envoie d'un bloc de donnée
-            readSize = fread(buffer,TAILLE,1,file); //fread retourne le nombre de block lue, ici 1 ou 0, 0 = rien ou moins d'un bloc lu
+            writeDirectClient(clientId,buffer,readSize); //envoie d'un bloc de donnée
+            readSize = fread(buffer,1,TAILLE,file); //fread retourne le nombre de block lue, ici 1 ou 0, 0 = rien ou moins d'un bloc lu
         }while(readSize != 0);
         fclose(file);
     }
@@ -88,8 +89,8 @@ int sendContentLength(int clientId,char * file){
 
 int sendRequest(int clientId, char * hostname, char * pathname ){ //Valide
     int toReturn = -1;
+    printf("req = %s\n",pathname);
     char * path = (char *)malloc(PATHSIZE);
-    
     strcpy(path,PATH_TO_SITES);
     if(strlen(hostname) < 1){ //champ host indisponible, donne un site par défaut
         strcpy(&path[strlen(path)],DEFAULT_SITE);
@@ -97,19 +98,20 @@ int sendRequest(int clientId, char * hostname, char * pathname ){ //Valide
         strcpy(&path[strlen(path)],hostname);
     }
     
-    path[strlen(path)]='/'; // ../sites/www.sites.com/
-    strcpy(&path[strlen(path)],pathname); // ../sites/www.sites.com/image.jpg
-    //printf("complete path = %s\n",path);
-    if(fileExist(path)){
-        sendContentType(clientId,pathname);
-        toReturn = sendFile(clientId,path);
+    //path[strlen(path)]='/'; // ../sites/www.sites.com/
+    if(strcmp(pathname,"/") == 0){
+        strcpy(&path[strlen(path)],"/index.html"); // par défaut index.html
+    }else{
+        strcpy(&path[strlen(path)],pathname); // ../sites/www.sites.com/image.jpg
     }
     
-    
-    
-    
-    
-    
+    //printf("complete path = %s\n",path);
+    if(fileExist(path)){
+        writeDirectClient(clientId,OK_HTML_11,strlen(OK_HTML_11));
+        sendContentType(clientId,pathname);
+        toReturn = sendFile(clientId,path);
+        endWriteDirectClient(clientId);
+    }
     
     free(path);
     return toReturn;
@@ -129,7 +131,12 @@ int sendContentType(int clientId, char * pathname){
     char * buffer1 = (char *)malloc(PATHSIZE);
     char * buffer2 = (char *)malloc(PATHSIZE);
     char * reponse = (char *)malloc(TAILLE);
-    sscanf(pathname,"%[^.].%s",buffer1,buffer2);
+    if(strcmp(pathname,"/") == 0){
+        strcpy(buffer2,"html"); //index.html
+    }else{
+        sscanf(pathname,"%[^.].%s",buffer1,buffer2);
+    }
+    
     //printf("mime = %s\n",buffer2);
     strcpy(reponse,"Content-Type: ");
     if(strcmp(buffer2,"html") == 0 || strcmp(buffer2,"css") == 0 || strcmp(buffer2,"csv") == 0 || strcmp(buffer2,"html") == 0){ //type text
@@ -224,7 +231,7 @@ int sendContentType(int clientId, char * pathname){
     }
     strcpy(&reponse[strlen(reponse)],"\r\n");
     writeDirectClient(clientId,reponse,strlen(reponse));
-    //printf("%s\n",reponse);
+    //printf("mime = %s\n",reponse);
     free(buffer1);
     free(buffer2);
     free(reponse);
