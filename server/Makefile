@@ -15,3 +15,6 @@ vincent.o: vincent.c
 	
 val:
 	valgrind -v --tool=memcheck --leak-check=full --leak-resolution=low --show-reachable=yes --track-origins=yes ./server 	
+	
+clean:
+	rm *.o
