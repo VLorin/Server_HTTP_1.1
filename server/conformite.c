@@ -12,6 +12,7 @@
 
 int conformite_methode(_Token* root, int Id){
 	_Token *r, *r1, *r2, *r3, *r4;
+	int toReturn;
 	r = searchTree(root,"method");
 	Lnode* noeud = (Lnode*) r->node;
 	if((compare_chaine(noeud->value,noeud->len,"GET",3)==0) || (compare_chaine(noeud->value,noeud->len,"HEAD",4)==0)){
@@ -22,9 +23,9 @@ int conformite_methode(_Token* root, int Id){
 			writeDirectClient(Id,ERROR400,strlen(ERROR400));
 			endWriteDirectClient(Id);
 			requestShutdownSocket(Id);
-			return 0;
+			toReturn = 0;
 		}else{
-			return 1;
+			toReturn = 1;
 		}
 	}
 	if(compare_chaine(noeud->value,noeud->len,"POST",4)==0){
@@ -35,7 +36,7 @@ int conformite_methode(_Token* root, int Id){
 			writeDirectClient(Id,ERROR400,strlen(ERROR400));
 			endWriteDirectClient(Id);
 			requestShutdownSocket(Id);
-			return 0;
+			toReturn = 0;
 		}else{
 			r3 = searchTree(root,"Content_Length");
 			if(r3 == NULL){
@@ -44,9 +45,9 @@ int conformite_methode(_Token* root, int Id){
 					writeDirectClient(Id,ERROR400,strlen(ERROR400));
 					endWriteDirectClient(Id);
 					requestShutdownSocket(Id);
-					return 0;
+					toReturn = 0;
 				}else{
-					return 1;
+					toReturn = 1;
 				}
 
 			}else{
@@ -60,12 +61,12 @@ int conformite_methode(_Token* root, int Id){
 					requestShutdownSocket(Id);
 				}
 				else if(len == atoi(value)){
-						return 1;
+						toReturn = 1;
 				}else{
 					writeDirectClient(Id,ERROR400,strlen(ERROR400));
 					endWriteDirectClient(Id);
 					requestShutdownSocket(Id);
-					return 0;
+					toReturn = 0;
 				}
 			}
 		}
@@ -74,8 +75,9 @@ int conformite_methode(_Token* root, int Id){
 		writeDirectClient(Id,ERROR400,strlen(ERROR400));
 		endWriteDirectClient(Id);
 		requestShutdownSocket(Id);
-		return 0;
+		toReturn = 0;
 	}
+return toReturn;
 }
 
 
@@ -92,27 +94,29 @@ int compare_chaine(char *s1, int l1, char *s2, int l2){
 
 int conformite_version(_Token* root, int Id){
   _Token *r, *r1;
+  int toReturn;
   r = searchTree(root,"HTTP_version");
   Lnode* noeud = (Lnode*) r->node;
   if(compare_chaine(noeud->value,noeud->len,"HTTP/1.0",8)==0){
-    return 1;
+    toReturn = 1;
    }
   else if(compare_chaine(noeud->value,noeud->len,"HTTP/1.1",8)==0){
       r1 = searchTree(root,"Host");
       if(r1){
-      	return 1;
+      	toReturn = 1;
       }else{
         writeDirectClient(Id,ERROR400,strlen(ERROR400));
         endWriteDirectClient(Id);
         requestShutdownSocket(Id);
-        return 0;
+        toReturn = 0;
         }
     } else {
       writeDirectClient(Id,ERROR400,strlen(ERROR400));
       endWriteDirectClient(Id);
       requestShutdownSocket(Id);
-      return 0;
+      toReturn = 0;
     }
+return toReturn;
 }
 
 
@@ -145,6 +149,8 @@ int unicite_header(_Token* root, int Id){
 
 
 int conformite(_Token *root, int Id){
-	if(unicite_header(root,Id) == 1 && conformite_version(root,Id) == 1 && conformite_methode(root,Id) == 1) return 1;
-	else return -1;
+	int toReturn;
+	if(unicite_header(root,Id) == 1 && conformite_version(root,Id) == 1 && conformite_methode(root,Id) == 1) toReturn = 1;
+	else toReturn = -1;
+return toReturn;
 }
