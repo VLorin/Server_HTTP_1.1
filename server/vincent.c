@@ -39,8 +39,8 @@ int sendFile(int clientId, char *filename){ // renvoie 1 si pas d'erreur, -1 sin
     int toReturn;
     size_t readSize; // nombre de bloc lu par fread
     FILE * file; //pointeur vers filename
-    file = fopen(filename,"r");
-    char * buffer = (char*) malloc(sizeof(char)*TAILLE); //buffer d'envoie, TAILLE (1500) octets
+    file = fopen(filename,"rb");
+    char * buffer = (char*) malloc(TAILLE); //buffer d'envoie, TAILLE (1500) octets
     // send content-length
     if(file == NULL){
         perror("SendHTML2 - File not found");
@@ -64,7 +64,7 @@ int sendFile(int clientId, char *filename){ // renvoie 1 si pas d'erreur, -1 sin
 int fileExist(char * filename){ //Valide
     int toReturn = 1;
     FILE * file;
-    file = fopen(filename,"r");
+    file = fopen(filename,"rb");
     if(file == NULL){
         toReturn = -1;
         perror("SendHTML1 - File not found");
