@@ -22,4 +22,4 @@ Le chemin pour accèder aux sites doit-être spécifié dans vincent.c à la lig
 "PATH_TO_SITES", de même le site par défaut à la ligne 28 "DEFAULT_SITE".
 
 Les sites disponible sont dans le dossier ../sites (www.toto.com et www.fake.com)
-Il faut biensûr éditer le fichier /etc/hosts de son system pour tester les champs hosts
+Il faut biensûr éditer le fichier /etc/hosts de son système pour tester les champs hosts
