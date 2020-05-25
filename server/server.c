@@ -37,19 +37,26 @@ int main(int argc, char *argv[]) {
 		if (res=parseur(requete->buf,requete->len)) { //syntaxe valide -> interprétation de la requete
 			_Token *root;
 			root=getRootTree();
-			
 			if(conformite(root,requete->clientId) == 1){ //vérification sémantique valide, sinon essage d'erreur envoyé et connexion fermée
 				//traitement request-target : Bastien
 				char *req = requestTarget(root,requete->clientId);
 				if(req != (void *)-1){ //request-target valide, sinon message d'erreur envoyé et connexion fermée
 
 					//traitement de la réponse : Vincent
-					printf("req = %s\n",req);
-					sendRequest(requete->clientId,"www.toto.com",req);
+					char * host = findHost(root);
+					if(host[0] == 'w'){ //pour renvoyer la page toto.com si il n'y pas de champ host
+						sendRequest(requete->clientId,host,req,isHTTP11(root));
+					}else{
+						printf("envoie defaut\n");
+						sendRequest(requete->clientId,"www.toto.com",req,isHTTP11(root));
+					}
+					//free(req);
+					free(host);
 					if(fin_connexion(root) == -1){
 						requestShutdownSocket(requete->clientId);
 					}
 				}
+				free(req);
 			}
 			
 			purgeTree(root);
@@ -66,3 +73,13 @@ int main(int argc, char *argv[]) {
 	}
 	return (1);
 }
+
+
+
+
+
+
+
+
+
+

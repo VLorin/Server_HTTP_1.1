@@ -122,6 +122,7 @@ void * dotdotremoval(char *r, int len){
 	}
 	res[i] = '\0';
 	if(k == 0) {retour = (void*) res;}
+	//free(res);
 	return retour;
 }
 
@@ -137,8 +138,14 @@ void * requestTarget(_Token *r, int client){
 		noeud = (Lnode *) orig->node;
 		if(noeud->len > TAILLE_URI) erreur = 1;
 		else {	char* res = dotdotremoval(percentEncoding(noeud->value,noeud->len),noeud->len);
-			if(res != (void*) -1) retour = (void*) res;
-			else erreur = 2;
+			if(res != (void*) -1){
+				retour = (void*) res;
+				
+			} 
+			else{
+				free(res);
+				erreur = 2;
+			}
 		}
 	} else { erreur = 3; }
 

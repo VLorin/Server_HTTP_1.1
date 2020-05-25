@@ -17,6 +17,7 @@ Crée par LORIN Vincent P2022
 #include "httpparser.h" 
 #include "api.h" 
 #include "vincent.h"
+#include "erreur.h"
 
 #define REPONSE_HTML "HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n"
 #define OK_HTML_10 "HTTP/1.0 200 OK\r\n"
@@ -26,14 +27,6 @@ Crée par LORIN Vincent P2022
 #define PATH_TO_SITES "../sites/" 
 #define DEFAULT_SITE "www.toto.com"
 
-int sendHTML(int clientId, char * filename){
-    int toReturn = -1;
-    if(fileExist(filename) != -1){ //verification de l'existence du fichier
-        writeDirectClient(clientId,REPONSE_HTML,strlen(REPONSE_HTML)); // Envoie entête pour reponse HTML
-        toReturn = sendFile(clientId, filename); //envoie de la page html
-    }
-    return toReturn;
-}
 
 int sendFile(int clientId, char *filename){ // renvoie 1 si pas d'erreur, -1 sinon
     int toReturn;
@@ -81,15 +74,14 @@ int sendContentLength(int clientId,char * file){
     strcpy(buffer, "Content-Length:");
     sprintf(&buffer[strlen(buffer)],"%d",taille);
     strcpy(&buffer[strlen(buffer)],"\r\n");
-    printf("%s\n",buffer);
     writeDirectClient(clientId,buffer,strlen(buffer));
     free(buffer);
     return toReturn;
 }
 
-int sendRequest(int clientId, char * hostname, char * pathname ){ //Valide
+int sendRequest(int clientId, char * hostname, char * pathname, int versionHTTP ){ //Valide
     int toReturn = -1;
-    printf("req = %s\n",pathname);
+    //printf("req = %s\n",pathname);
     char * path = (char *)malloc(PATHSIZE);
     strcpy(path,PATH_TO_SITES);
     if(strlen(hostname) < 1){ //champ host indisponible, donne un site par défaut
@@ -107,12 +99,20 @@ int sendRequest(int clientId, char * hostname, char * pathname ){ //Valide
     
     //printf("complete path = %s\n",path);
     if(fileExist(path)){
-        writeDirectClient(clientId,OK_HTML_11,strlen(OK_HTML_11));
-        sendContentType(clientId,pathname);
+        if(versionHTTP == 1){
+            writeDirectClient(clientId,OK_HTML_11,strlen(OK_HTML_11));
+            sendContentType(clientId,pathname);
         toReturn = sendFile(clientId,path);
+        }else if (versionHTTP == 0){
+            writeDirectClient(clientId,OK_HTML_11,strlen(OK_HTML_10));
+            sendContentType(clientId,pathname);
+        toReturn = sendFile(clientId,path);
+        }else{
+            writeDirectClient(clientId,ERROR400,strlen(ERROR400));
+            toReturn = -1;
+        }
         endWriteDirectClient(clientId);
     }
-    
     free(path);
     return toReturn;
 }
@@ -236,4 +236,47 @@ int sendContentType(int clientId, char * pathname){
     free(buffer2);
     free(reponse);
     return toReturn;
+}
+
+
+char * findHost(_Token* root){
+    char * hostname = (char *)malloc(TAILLE);
+    _Token *r;
+	r = searchTree(root,"Host");
+	if(r){
+	    Lnode *node;
+	    node = (Lnode *)r->node;
+	    sscanf(node->value,"%[^:]:",hostname); //pour enlever :8080 à la fin du champ host
+	    //printf("host = %s\n",hostname);
+	}else{
+	    printf("TROUVE PAS HOST\n");
+	    
+	}
+	purgeElement(&r);
+	return hostname;
+}
+
+int isHTTP11(_Token* root){ //retoune 1 si HTTP1.1, 0 si HTTP1.0, -1 sinon
+    int toReturn;
+    char * versionHTTP = (char *)malloc(TAILLE);
+    _Token *r;
+    r = searchTree(root, "HTTP_version");
+    if(r){
+	    Lnode *node;
+	    node = (Lnode *)r->node;
+	    sscanf(node->value,"%s",versionHTTP); //pour enlever :8080 à la fin du champ host
+	}else{
+	    printf("TROUVE PAS HOST\n");
+	    
+	}
+	if(strcmp(versionHTTP,"HTTP/1.1") == 0){
+	    toReturn = 1;
+	}else if( strcmp(versionHTTP,"HTTP/1.0") == 0){
+	    toReturn = 0;
+	}else{
+	    toReturn = -1;
+	}
+	purgeElement(&r);
+	free(versionHTTP);
+	return toReturn;
 }

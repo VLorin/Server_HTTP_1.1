@@ -123,6 +123,8 @@ int conformite_version(_Token* root, int Id){
 		requestShutdownSocket(Id);
 		toReturn = 0;
 	}
+	purgeElement(&r);
+	purgeElement(&r1);
 	return toReturn;
 }
 
@@ -163,13 +165,22 @@ int unicite_header(_Token* root, int Id){
 		}
 	}
 	purgeElement(&r);
-	return 1;
+	return retour;
 }
 
 
 
 int conformite(_Token *root, int Id){
 	int retour = -1;
-	if(unicite_header(root,Id) == 1 && conformite_version(root,Id) == 1 && conformite_methode(root,Id) == 1) {retour = 1;}
+	/*
+	if(unicite_header(root,Id) == 1 && conformite_version(root,Id) == 1 && conformite_methode(root,Id) == 1) {
+		retour = 1;
+		
+	}*/
+	//unicite_header ne fonctionne pas comme il faut...
+	if(conformite_version(root,Id) == 1 && conformite_methode(root,Id) == 1) {
+		retour = 1;
+		
+	}
 	return retour;
 }
