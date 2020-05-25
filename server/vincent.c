@@ -112,6 +112,10 @@ int sendRequest(int clientId, char * hostname, char * pathname, int versionHTTP 
             toReturn = -1;
         }
         endWriteDirectClient(clientId);
+    }else{
+        writeDirectClient(clientId,ERROR404,strlen(ERROR404));
+        toReturn = -1;
+        endWriteDirectClient(clientId);
     }
     free(path);
     return toReturn;

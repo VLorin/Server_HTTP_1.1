@@ -16,8 +16,9 @@ int fileExist(char * filename);
 /* Retourne la taille en octet d'un fichier                               */
 int contentLength(char * filename);
 
-/* Fonction principale de reponse à un GET                                 */
-int sendRequest(int clientId, char * host, char * pathname, int verionHTTP);
+/* Fonction principale de reponse à un GET, envoie le fichier demandé sinon
+ * retourne erreur 404 si il n'existe pas                                  */
+int sendRequest(int clientId, char * host, char * pathname, int versionHTTP);
 
 /* Envoie l'en-tête "Content-Length : <taille du fichier>"                 */
 int sendContentLength(int clientId,char * file);
