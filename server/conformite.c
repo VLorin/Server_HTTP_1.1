@@ -178,6 +178,7 @@ int conformite(_Token *root, int Id){
 		
 	}*/
 	//unicite_header ne fonctionne pas comme il faut...
+	
 	if(conformite_version(root,Id) == 1 && conformite_methode(root,Id) == 1) {
 		retour = 1;
 		

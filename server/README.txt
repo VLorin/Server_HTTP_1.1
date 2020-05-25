@@ -1,15 +1,24 @@
+**** Developpeurs
+
+LORIN Vincent : vincent.c Makefile
+LACHAUX Bastien : server.c reqtarget.c erreur.h finconnexion.c
+GRIFFOUL Paul : confirmite.c
+
 **** launch it with: 
 
 export LD_LIBRARY_PATH=. 
 ./server
 
-**** Info
+**** Information
 
 le fichier "vincent.c" contient toutes les fonctions relatives à la réponse d'une
 requête.
 
-La vérification de l'unicité des headers (unicite_header) ne fonctionne pas trop
-il est donc désactivé temporairement (voir conformite.c ligne 175).
+La vérification de l'unicité des headers (unicite_header) ne fonctionne pas toujours
+comme il faut, il est donc désactivé temporairement (voir conformite.c ligne 175).
+La fonction fonctionne bien sur chrome et fixefox mais sur le navigateur de Cloud9 
+(IDE en ligne sur un VPS), il envoie plus d'headers et la fonction retourne -1 au
+lieu de 1.
 
 Il y a quelques problèmes d'allocs et free avec la fonction requestTarget, mais 
 nous n'arrivons pas à regler les problèmes. (environ 130 octets perdu)
