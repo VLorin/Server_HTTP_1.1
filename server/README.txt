@@ -19,3 +19,5 @@ l'adresse IP directement), la page retourné est www.toto.com par défaut.
 
 Le chemin pour accèder aux sites doit-être spécifié dans vincent.c à la ligne 27
 "PATH_TO_SITES", de même le site par défaut à la ligne 28 "DEFAULT_SITE".
+
+Les sites disponible sont dans le dossier ../sites (www.toto.com et www.fake.com)
